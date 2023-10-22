@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,17 +26,29 @@ class MainActivity : ComponentActivity() {
                         PokemonListScreen(navController = navController)
                     }
                     composable(
-                        "pokemon_detail_screen/{id}",
+                        "pokemon_detail_screen/{dominantColor}/{id}",
                         arguments = listOf(
+                            navArgument("dominantColor") {
+                                type = NavType.IntType
+                            },
                             navArgument("id") {
                                 type = NavType.IntType
                             }
                         )
                     ) {
+                        val dominantColor = remember {
+                            val color = it.arguments?.getInt("dominantColor")
+                            color?.let { Color(it) } ?: Color.White
+                        }
                         val id = remember {
                             it.arguments?.getInt("id")
                         }
 
+                        PokemonDetailScreen(
+                            dominantColor = dominantColor,
+                            pokemonId = id ?: 0,
+                            navController = navController
+                        )
                     }
                 }
             }
